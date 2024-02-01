@@ -25,8 +25,8 @@ jobs:
     - name: Get and save pdf files
       run: |
             curl -s https://www.charlottenc.gov/Growth-and-Development/Planning-and-Development/Historic-District/HDC-Agendas | strip-tags "tbody" -t "a" -m > data/output.txt
-            python scripts/extract_and_save_links.py --html-file-path data/output.txt --output-jsonl-file data/output_links.jsonl
-            python scripts/process_links.py --jsonl-file-path data/output_links.jsonl
+            python scripts/extract_and_save_links.py data/output.txt --output-jsonl-file data/output_links.jsonl
+            python scripts/process_links.py data/output_links.jsonl
     - name: Commit and push if it changed
       run: |
             git config user.name "Automated"
