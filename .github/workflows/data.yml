@@ -1,0 +1,37 @@
+name: Get Data
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron:  '0 11 * * *'
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out this repo
+      uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+        cache: 'pip'
+        cache-dependency-path: |
+            requirements.txt
+    - name: Install dependencies
+      run: |
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+    - name: Get and save pdf files
+      run: |
+            curl -s https://www.charlottenc.gov/Growth-and-Development/Planning-and-Development/Historic-District/HDC-Agendas | strip-tags "tbody" -t "a" -m > data/output.txt
+            python scripts/extract_links.py --html-file-path data/output.txt --output-jsonl-file data/output_links.jsonl
+            python scripts/process_links.py --jsonl-file-path data/output_links.jsonl
+    - name: Commit and push if it changed
+      run: |
+            git config user.name "Automated"
+            git config user.email "actions@users.noreply.github.com"
+            git add data/
+            timestamp=$(date -u)
+            git commit -m "Latest data: ${timestamp}" || exit 0
+            git push
