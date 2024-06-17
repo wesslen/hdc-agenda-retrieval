@@ -1,9 +1,21 @@
 import os
 import json
+import logging
 import requests
 import time
 import typer
 
+app = typer.Typer()
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+def remove_file_extension(md_file_url):
+    path = md_file_url.split('data/')[1]
+    filename, _ = os.path.splitext(path)
+    return filename
+
+@app.command()
 def save_md_files(input_path: str, output_path: str, override_save: bool = False) -> None:
     """
     Take a .jsonl file and save each of the .md files specified in the 'md_file' key.
@@ -19,7 +31,8 @@ def save_md_files(input_path: str, output_path: str, override_save: bool = False
         for line in f:
             data = json.loads(line)
             md_file_url = data['md_file']
-            md_file_path = os.path.join(output_path, md_file_url.split('data/')[1] + '.md')
+            md_file = remove_file_extension(md_file_url)
+            md_file_path = os.path.join(output_path, md_file + '.md')
             os.makedirs(os.path.dirname(md_file_path), exist_ok=True)
             if not os.path.exists(md_file_path) or override_save:
                 response = requests.get(md_file_url)
