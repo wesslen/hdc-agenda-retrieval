@@ -27,6 +27,10 @@ jobs:
             curl -s https://www.charlottenc.gov/Growth-and-Development/Planning-and-Development/Historic-District/HDC-Agendas | strip-tags "tbody" -t "a" -m > data/output.txt
             python scripts/extract_and_save_links.py data/output.txt --output-jsonl-file data/output_links.jsonl
             python scripts/process_links.py data/output_links.jsonl
+    - name: Convert to md files
+      run: |
+            python scripts/pdf_to_jsonl.py data data/output/processed.jsonl
+            python scripts/save_md_files.py data/output/processed.jsonl data/output/markdown/
     - name: Commit and push if it changed
       run: |
             git config user.name "Automated"
