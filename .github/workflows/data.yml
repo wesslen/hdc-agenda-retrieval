@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
             python -m pip install --upgrade pip
-            python -m pip install -r requirements.txt
+            python -m pip install -r requirements-data.txt
     - name: Get and save pdf files
       run: |
             curl -s https://www.charlottenc.gov/Growth-and-Development/Planning-and-Development/Historic-District/HDC-Agendas | strip-tags "tbody" -t "a" -m > data/output.txt
